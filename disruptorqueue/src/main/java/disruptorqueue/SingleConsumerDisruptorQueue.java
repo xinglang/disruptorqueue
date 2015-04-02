@@ -34,6 +34,10 @@ public class SingleConsumerDisruptorQueue<T> extends AbstractQueue<T> implements
             item = null;
             return t;
         }
+        
+        public T readValue() {
+            return item;
+        }
 
         public void setValue(T event) {
             this.item = event;
@@ -159,7 +163,7 @@ public class SingleConsumerDisruptorQueue<T> extends AbstractQueue<T> implements
         }
         if (l <= knownPublishedSeq) {
             Event<T> eventHolder = ringBuffer.get(l);
-            return eventHolder.getValue();
+            return eventHolder.readValue();
         }
         return null;
     }
@@ -172,8 +176,9 @@ public class SingleConsumerDisruptorQueue<T> extends AbstractQueue<T> implements
         }
         if (l <= knownPublishedSeq) {
             Event<T> eventHolder = ringBuffer.get(l);
+            T t = eventHolder.getValue();
             consumedSeq.incrementAndGet();
-            return eventHolder.getValue();
+            return t;
         }
         return null;
     }
@@ -218,8 +223,9 @@ public class SingleConsumerDisruptorQueue<T> extends AbstractQueue<T> implements
             }
         }
         Event<T> eventHolder = ringBuffer.get(l);
+        T t = eventHolder.getValue();
         consumedSeq.incrementAndGet();
-        return eventHolder.getValue();
+        return t;
     }
 
     @Override
